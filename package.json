@@ -4,11 +4,13 @@
   "private": true,
   "engines": { "node": "20.x" },
   "scripts": {
-    "build": "echo \"no build step\"",
+    "build": "tsc",
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "@genkit-ai/core": "^0.10.0",
+    "@genkit-ai/openai": "^0.10.0"
   }
 }
