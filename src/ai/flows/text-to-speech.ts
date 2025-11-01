@@ -1,12 +1,11 @@
-import { ai } from "../genkit";
+import { getAI } from "../genkit.js";
 
-export async function textToSpeech(inputText: string): Promise<string> {
+export async function textToSpeech(inputText) {
   if (!inputText) throw new Error("Kein Text übergeben");
-
-  const response = await ai.generate({
+  const ai = await getAI();
+  const res = await ai.generate({
     model: "gpt-4o-mini",
     prompt: `Sprich den folgenden Text natürlich aus: ${inputText}`,
   });
-
-  return response.outputText;
+  return res.outputText;
 }
