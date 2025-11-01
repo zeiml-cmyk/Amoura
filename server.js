@@ -1,4 +1,4 @@
-// server.js
+// server.js  (ES6 version cf4e777)
 import express from "express";
 import cors from "cors";
 
@@ -6,17 +6,17 @@ const app = express();
 const port = process.env.PORT || 8080;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-// Middleware
+// --- Middleware ---
 app.use(cors());
 app.use(express.json());
 
-// Health / Root
+// --- Health / Root ---
 app.get("/health", (_req, res) => res.status(200).send("ok"));
 app.get("/", (_req, res) =>
   res.send("✅ Amoura Backend läuft erfolgreich auf Firebase App Hosting.")
 );
 
-// Chat-Endpoint
+// --- Chat-Endpoint (OpenAI: gpt-4o-mini) ---
 app.post("/api/chat", async (req, res) => {
   try {
     if (!OPENAI_API_KEY) {
@@ -34,18 +34,22 @@ app.post("/api/chat", async (req, res) => {
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: message }],
       temperature: 0.2,
-      max_tokens: 400
+      max_tokens: 400,
     };
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
 
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(30_000)
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     if (!resp.ok) {
       const txt = await resp.text().catch(() => "");
@@ -67,7 +71,7 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// Start
+// --- Start ---
 app.listen(port, () => {
   console.log(`🚀 Amoura Backend läuft auf Port ${port}`);
 });
